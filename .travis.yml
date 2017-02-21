@@ -5,9 +5,10 @@ services:
 language: bash
 script:
 #general settings
-OWNER=valentinvieriu
-IMAGE_NAME=alpine-qemu
-QNAME=$(OWNER)/$(IMAGE_NAME)
+- >
+  OWNER=valentinvieriu
+  IMAGE_NAME=alpine-qemu
+  QNAME=$OWNER/$IMAGE_NAME
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # get qemu-arm-static binary
@@ -18,16 +19,16 @@ QNAME=$(OWNER)/$(IMAGE_NAME)
   tar xzf qemu-arm-static.tar.gz &&
   popd
 # build image
-- docker build -t $(QNAME):build .
+- docker build -t $QNAME:build .
 # test image
-- docker run $(QNAME):build uname -a
+- docker run $QNAME:build uname -a
 # push image
 - >
   if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-    TAG=$(grep "FROM " Dockerfile | sed 's/.*://')
-    docker tag $(QNAME):build $(QNAME):$(TAG)
-    docker tag $(QNAME):build $(QNAME):latest
-    docker push $(QNAME):$(TAG)
-    docker push $(QNAME):latest
+    export TAG=$(grep "FROM " Dockerfile | sed 's/.*://')
+    docker tag $QNAME:build $QNAME:$TAG
+    docker tag $QNAME:build $QNAME:latest
+    docker push $QNAME:$TAG
+    docker push $QNAME:latest
   fi
