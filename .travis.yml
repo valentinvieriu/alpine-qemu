@@ -4,26 +4,30 @@ services:
 - docker
 language: bash
 script:
+#general settings
+OWNER=valentinvieriu
+IMAGE_NAME=alpine-qemu
+QNAME=$(OWNER)/$(IMAGE_NAME)
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # get qemu-arm-static binary
 - mkdir tmp
 - >
   pushd tmp &&
-  curl -L -o qemu-arm-static.tar.gz https://github.com/multiarch/qemu-user-static/releases/download/v2.6.0/qemu-arm-static.tar.gz &&
+  curl -L -o qemu-arm-static.tar.gz https://github.com/multiarch/qemu-user-static/releases/download/v2.8.0/qemu-arm-static.tar.gz &&
   tar xzf qemu-arm-static.tar.gz &&
   popd
 # build image
-- docker build -t valentinvieriu/alpine-qemu:build .
+- docker build -t $(QNAME):build .
 # test image
-- docker run valentinvieriu/alpine-qemu:build uname -a
+- docker run $(QNAME):build uname -a
 # push image
 - >
   if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
     TAG=$(grep "FROM " Dockerfile | sed 's/.*://')
-    docker tag valentinvieriu/alpine-qemu:build valentinvieriu/alpine-qemu:$TAG
-    docker tag valentinvieriu/alpine-qemu:build valentinvieriu/alpine-qemu:latest
-    docker push valentinvieriu/alpine-qemu:$TAG
-    docker push valentinvieriu/alpine-qemu:latest
+    docker tag $(QNAME):build $(QNAME):$(TAG)
+    docker tag $(QNAME):build $(QNAME):latest
+    docker push $(QNAME):$(TAG)
+    docker push $(QNAME):latest
   fi
