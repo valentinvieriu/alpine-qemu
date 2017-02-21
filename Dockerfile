@@ -4,4 +4,4 @@ FROM armhf/alpine:3.5
 # docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # FROM hypriot/rpi-alpine
 
-COPY qemu/qemu-arm-static /usr/bin/qemu-arm-static
+COPY tmp/qemu-arm-static /usr/bin/qemu-arm-static
