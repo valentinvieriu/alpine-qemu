@@ -1,0 +1,10 @@
+version: '3.1'
+
+services:
+  alpine:
+    image: valentinvieriu/alpine-qemu:3.5
+    # image: valentinvieriu/alpine-qemu:latest
+    build:
+      context: .
+      # args:
+        # - QEMU_VERSION=v2.9.1
