@@ -1,1 +1,0 @@
-To have the latest quemu-static check https://github.com/multiarch/qemu-user-static/releases/

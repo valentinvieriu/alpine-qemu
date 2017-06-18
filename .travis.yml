@@ -9,13 +9,14 @@ script:
   OWNER=valentinvieriu
   IMAGE_NAME=alpine-qemu
   QNAME=$OWNER/$IMAGE_NAME
+  QUEMU_VERSION=2.9.1
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # get qemu-arm-static binary
 - mkdir tmp
 - >
   pushd tmp &&
-  curl -L -o qemu-arm-static.tar.gz https://github.com/multiarch/qemu-user-static/releases/download/v2.8.0/qemu-arm-static.tar.gz &&
+  curl -L -o qemu-arm-static.tar.gz https://github.com/multiarch/qemu-user-static/releases/download/v${QUEMU_VERSION}/qemu-arm-static.tar.gz &&
   tar xzf qemu-arm-static.tar.gz &&
   popd
 # build image
@@ -26,9 +27,12 @@ script:
 - >
   if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-    export TAG=$(grep "FROM " Dockerfile | sed 's/.*://')
-    docker tag $QNAME:build $QNAME:$TAG
+    export TAG_SHORT=$(grep "FROM " Dockerfile | sed 's/.*://')
+    export TAG_LONG=$(grep "FROM " Dockerfile | sed 's/.*://')-${QUEMU_VERSION}
+    docker tag $QNAME:build $QNAME:$TAG_SHORT
+    docker tag $QNAME:build $QNAME:$TAG_LONG
     docker tag $QNAME:build $QNAME:latest
-    docker push $QNAME:$TAG
+    docker push $QNAME:$TAG_SHORT
+    docker push $QNAME:$TAG_LONG
     docker push $QNAME:latest
   fi
