@@ -9,7 +9,7 @@ script:
   OWNER=valentinvieriu
   IMAGE_NAME=alpine-qemu
   QNAME=$OWNER/$IMAGE_NAME
-  QUEMU_VERSION=2.9.1
+  QUEMU_VERSION=2.12.0
 # prepare qemu
 - docker run --rm --privileged multiarch/qemu-user-static:register --reset
 # get qemu-arm-static binary
